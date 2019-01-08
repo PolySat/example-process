@@ -1,0 +1,51 @@
+namespace example;
+
+const CMD_BASE =       0x400;
+const TYPE_BASE = 0x01000400;
+const ERR_BASE =  0x02000400;
+
+enum types {
+   STATUS = TYPE_BASE + 0,
+   PRINT_PARAMS = TYPE_BASE + 1,
+};
+
+enum Cmds {
+   PRINT = CMD_BASE + 0,
+};
+
+enum Errs {
+   BAD_NUM = ERR_BASE + 0,
+};
+
+struct Status {
+   int count {
+      name "Count";
+      key status_count;
+      unit "count";
+      description "The number of times status has been called";
+      divisor 0;
+      offset 0;
+   };
+} = types::STATUS;
+
+struct PrintParams {
+   unsigned int number {
+      key number;
+      description "A number to print out to the screen";
+   };
+   string str<1024> {
+      key string;
+      description "A string to print out to the screen";
+   };
+} = types::PRINT_PARAMS;
+
+command "example-status" {
+   summary "Reports the general health status of the example process";
+} = IPC::CMDS::STATUS;
+
+command "example-print" {
+   summary "Causes the example process to print data to stdout";
+   param types::PRINT_PARAMS;
+} = Cmds::PRINT;
+
+error Errs::BAD_NUM = "Passed an odd number when expecting an even number";

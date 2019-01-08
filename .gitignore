@@ -1,4 +1,6 @@
 payload
+example-util
+example_pkt.[ch]
 
 # Object files
 *.o

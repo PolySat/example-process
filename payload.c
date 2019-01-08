@@ -5,17 +5,44 @@
 
 #include <polysat/polysat.h>
 #include <stdio.h>
+#include "example_pkt.h"
+#include <polysat/cmd-pkt.h>
 
 static ProcessData *gProc = NULL;
 
-// Function called when a status command is sent
-void payload_status(int socket, unsigned char cmd, void * data, size_t dataLen,
-                     struct sockaddr_in * src)
-{
-   char status = 0;
+static void print_cmd_handler(struct ProcessData *proc,
+      struct IPC_Command *cmd,
+      struct sockaddr_in *fromAddr, void *arg, int fd);
 
-   PROC_cmd_sockaddr(gProc, CMD_STATUS_RESPONSE, &status,
-        sizeof(status), src);
+struct XDR_CommandHandlers handlers[] = {
+   { IPC_EXAMPLE_CMDS_PRINT, &print_cmd_handler, NULL},
+};
+
+static void print_cmd_handler(struct ProcessData *proc,
+      struct IPC_Command *cmd,
+      struct sockaddr_in *fromAddr, void *arg, int fd)
+{
+   struct IPC_EXAMPLE_PrintParams *params =
+      (struct IPC_EXAMPLE_PrintParams*)cmd->parameters.data;
+
+   if (params->number % 2)
+      IPC_error(proc, cmd, IPC_EXAMPLE_ERRS_BAD_NUM, fromAddr);
+   else {
+      printf("command data: %u %s\n", params->number, params->str);
+      IPC_response(proc, cmd, IPC_TYPES_VOID, NULL, fromAddr);
+   }
+}
+
+// Function called to generate a status structure
+static void status_data_populator(void *arg, XDR_tx_struct cb,
+      void *cb_args)
+{
+   struct IPC_EXAMPLE_Status resp;
+   static int count = 0;
+
+   resp.count = ++count;
+
+   cb(&resp, cb_args);
 }
 
 // Simple SIGINT handler for cleanup
@@ -37,8 +64,12 @@ int usage(const char *name)
 // Entry point
 int main(int argc, char *argv[])
 {
+   XDR_register_populator(&status_data_populator, NULL,
+         IPC_EXAMPLE_TYPES_STATUS);
+   // IPC_EXAMPLE_CMDS_PRINT
+
    // Initialize the process
-   gProc = PROC_init("payload");
+   gProc = PROC_init("payload", WD_DISABLED);
    DBG_setLevel(DBG_LEVEL_ALL);
 
    // Add a signal handler call back for SIGINT signal
