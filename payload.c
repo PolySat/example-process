@@ -66,10 +66,10 @@ int main(int argc, char *argv[])
 {
    XDR_register_populator(&status_data_populator, NULL,
          IPC_EXAMPLE_TYPES_STATUS);
-   // IPC_EXAMPLE_CMDS_PRINT
+   // CMD_set_xdr_cmd_handler(IPC_EXAMPLE_CMDS_PRINT, &print_cmd_handler, NULL);
 
    // Initialize the process
-   gProc = PROC_init("payload", WD_DISABLED);
+   gProc = PROC_init_xdr("payload", WD_DISABLED, handlers);
    DBG_setLevel(DBG_LEVEL_ALL);
 
    // Add a signal handler call back for SIGINT signal
