@@ -1,6 +1,6 @@
 include Make.rules.arm
 
-override LDFLAGS+=-rdynamic -lproc -lsatpkt -lpolydrivers -lm -lrt -pthread
+override LDFLAGS+=-rdynamic -lproc3 -lsatpkt -lpolydrivers -lm -lrt -pthread
 override CFLAGS+=-Wall -Werror -pedantic -std=gnu99 -g -pthread
 
 SRC=payload.c example_pkt.c
@@ -14,6 +14,8 @@ all: $(EXECUTABLE) $(CMDS)
 
 payload: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $@ -lz
+
+payload.c: example_pkt.h
 
 example-util: example-util.o example_pkt.o
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@ -lz
@@ -32,5 +34,5 @@ install: $(EXECUTABLE) $(CMDS)
 .PHONY: clean install
 
 clean:
-	rm -rf *.o $(EXECUTABLE) $(CMDS)
+	rm -rf *.o $(EXECUTABLE) $(CMDS) example_pkt.*
 

@@ -3,10 +3,10 @@
  *
  */
 
-#include <polysat/polysat.h>
+#include <polysat3/polysat.h>
 #include <stdio.h>
 #include "example_pkt.h"
-#include <polysat/cmd-pkt.h>
+#include <polysat3/cmd-pkt.h>
 
 static ProcessData *gProc = NULL;
 
@@ -42,7 +42,7 @@ static void status_data_populator(void *arg, XDR_tx_struct cb,
 
    resp.count = ++count;
 
-   cb(&resp, cb_args);
+   cb(&resp, cb_args, IPC_RESULTCODE_SUCCESS);
 }
 
 // Simple SIGINT handler for cleanup

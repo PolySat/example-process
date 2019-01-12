@@ -1,4 +1,4 @@
-#include <polysat/cmd.h>
+#include <polysat3/cmd.h>
 #include "example_pkt.h"
 
 int main(int argc, char **argv)
