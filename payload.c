@@ -15,7 +15,7 @@ static void print_cmd_handler(struct ProcessData *proc,
       struct sockaddr_in *fromAddr, void *arg, int fd);
 
 struct XDR_CommandHandlers handlers[] = {
-   { IPC_EXAMPLE_CMDS_PRINT, &print_cmd_handler, NULL},
+   {IPC_EXAMPLE_CMDS_PRINT, &print_cmd_handler, NULL},
 };
 
 static void print_cmd_handler(struct ProcessData *proc,
