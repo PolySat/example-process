@@ -1,23 +1,33 @@
+//importing other schemas is allowed
+//define the namespace, a unique identifier, for your process.
 namespace example;
 
+//these define *system-wide* numerical identifiers for the variables you will soon define. Be sure to find an unused space.
+//There is an address list on the wiki.
 const CMD_BASE =       0x400;
 const TYPE_BASE = 0x01000400;
 const ERR_BASE =  0x02000400;
 
+//define structures you want to be able to recognize when sent over the network. The offset is so that each structure definition
+//is in a contiguous chunk of memory
 enum types {
    STATUS = TYPE_BASE + 0,
    PRINT_PARAMS = TYPE_BASE + 1,
 };
 
+//define names of commands for your process
 enum Cmds {
    PRINT = CMD_BASE + 0,
 };
 
+//define error types for your process
 enum Errs {
    BAD_NUM = ERR_BASE + 0,
 };
 
+//here one provides the definition of the structs in a standard c manner, and associate it with the name you identified in the types enum.
 struct Status {
+   //in addition  to defining the contents of the struct, provide helpful information on it.
    int count {
       name "Count";
       key status_count;
@@ -39,6 +49,7 @@ struct PrintParams {
    };
 } = types::PRINT_PARAMS;
 
+//provide a summary of the commands and associate it with the name you identified in the types enum.
 command "example-status" {
    summary "Reports the general health status of the example process";
 } = IPC::CMDS::STATUS;
@@ -48,4 +59,5 @@ command "example-print" {
    param types::PRINT_PARAMS;
 } = Cmds::PRINT;
 
+//provide a descriptive string to be associated with any errors defined in the above enum
 error Errs::BAD_NUM = "Passed an odd number when expecting an even number";
